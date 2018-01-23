@@ -1,0 +1,72 @@
+import sys
+import bs4
+from bs4 import BeautifulSoup as soup
+from urllib import urlopen as uReq
+
+
+#my_url='https://www.newegg.com/Desktop-Computers/Category/ID-228'
+
+#grab the web page and download it
+uNew=uReq('https://www.bestbuy.com/site/searchpage.jsp?cp=1&searchType=search&st=desktop%20computers&_dyncharset=UTF-8&id=pcat17071&type=page&sc=Global&nrp=&sp=&list=n&af=true&iht=y&usc=All%20Categories&ks=960&keys=keys&qp=category_facet%3DAll%20Desktops~pcmcat143400050013')
+
+#to open and read the page
+page_html=uNew.read()
+
+#when we are done we need to close it.
+uNew.close()
+
+page_soup= soup(page_html, 'html.parser')
+
+#page_soup.h1  (to open the headline of the page, for instance:<h1 class="page-title-text">Desktop Computers</h1>)
+
+#page_soup.p   (the paragraph to know about the page instance:A great place to buy computers, computer parts, 
+#electronics, software, accessories, and DVDs online. With great prices, fast shipping, and top-rated customer service
+#- once you know, you
+
+#( to grab the whole item we need to find the item_container, to find it the best thing is to find all item containers 
+containers=page_soup.findAll('div', {'class':'row'}) 
+
+# to create a for loop we will need to work on every container that is the reason why we need 
+container=containers[0]
+
+filename='computer_desktop1.csv'
+f= open(filename,'w')
+
+headers= 'features, review, total_review, price\n'
+
+f.write(headers)
+
+
+for container in containers:
+    brand_container = container.findAll('div', {'class':'sku-title'})
+    try:
+        features = brand_container[0].text
+    except:
+        pass
+    review_container = container.findAll('span', {'class':'c-review-average'})
+    try:
+        review = review_container[0].text
+    except:
+        pass
+    total_review_container = container.findAll('span', {'class':'c-total-reviews'})
+    try:
+        total_review = total_review_container[0].text.strip()
+    except:
+        pass
+    price = container.findAll('div',{'class':'pb-hero-price pb-purchase-price'})
+    try:
+        price= price.span.text
+    except:
+        pass
+    print ('features:'+ features)
+    print ('review:'+ review)
+    print ('total_review:'+ total_review)
+    try:
+        print price
+    except:
+        pass
+    try:
+        f.write (features + ',' + review + ',' + total_review.replace(',','') + '\n')
+    except:
+        pass
+f.close()
