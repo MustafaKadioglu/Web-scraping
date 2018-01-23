@@ -1,0 +1,62 @@
+import numpy as np
+import pandas as pd
+
+product = pd.read_csv('C:\Users\Mike\computer_desktop1.csv')
+
+def pick_up(string):
+    new_item=''
+    str1=string.split('-')
+    for item in str1:
+        if 'GB' and 'Memory' in item:
+            new_item += item
+    return new_item
+
+ram_pro=product['features'].apply(lambda x: pick_up(x))
+
+def hdd_up(string):
+    new_item=''
+    str1=string.split('-')
+    for item in str1:
+        if 'TB' in item:
+            new_item += item
+    return new_item
+
+hdd_pro=product['features'].apply(lambda x: hdd_up(x))
+
+def screen_up(string):
+    new_item=''
+    str1=string.split('-')
+    for item in str1:
+        if '"' in item:
+            new_item += item
+    return new_item
+
+screen_pro=product['features'].apply(lambda x: screen_up(x))
+
+def brand_up(string):
+    str1=string.split('-')
+    return str1[0]
+
+brand_pro=product['features'].apply(lambda x: brand_up(x))
+
+def process_up(string):
+    new_item=''
+    str1=string.split('-')
+    for item in str1:
+        if 'Core' or 'AMD' in item:
+            new_item += item
+    return new_item
+
+process_pro=product['features'].apply(lambda x: process_up(x))
+
+product['ram'] = ram_pro
+product['hdd'] = hdd_pro
+product['screen'] = screen_pro
+product['brand'] = brand_pro
+product['processor'] = process_pro
+
+product.drop([0,1,4,5,6,7,8,9,10], axis=0, inplace=True)
+
+product.drop('features', axis=1, inplace=True)
+
+product.describe().transpose()
